@@ -20,7 +20,9 @@ package tigase.xmpp.impl;
 import tigase.db.NonAuthUserRepository;
 import tigase.kernel.beans.Bean;
 import tigase.kernel.beans.Inject;
+import tigase.server.Iq;
 import tigase.server.Packet;
+import tigase.server.xmppsession.PacketDefaultHandler;
 import tigase.server.xmppsession.SessionManager;
 import tigase.xmpp.*;
 import tigase.xmpp.impl.annotation.AnnotatedXMPPProcessor;
@@ -43,8 +45,9 @@ import static tigase.xmpp.impl.Message.XMLNS;
  * @author <a href="mailto:artur.hefczyc@tigase.org">Artur Hefczyc</a>
 */
 @Id(ELEM_NAME)
-@Handles({@Handle(path = {ELEM_NAME}, xmlns = XMLNS)})
-@Bean(name = ELEM_NAME, parent = SessionManager.class, active = false)
+@Handles({@Handle(path = {ELEM_NAME}, xmlns = XMLNS), @Handle(path = {Iq.ELEM_NAME, "fin"}, xmlns = "urn:xmpp:mam:2"),
+		  @Handle(path = {Iq.ELEM_NAME, "fin"}, xmlns = "urn:xmpp:mam:1")})
+@Bean(name = ELEM_NAME, parent = SessionManager.class, active = false, exportable = true)
 public class Message
 		extends AnnotatedXMPPProcessor
 		implements XMPPProcessorIfc, XMPPPreprocessorIfc, XMPPPacketFilterIfc {
@@ -55,6 +58,7 @@ public class Message
 	protected static final String ELEM_NAME = tigase.server.Message.ELEM_NAME;
 	protected static final String XMLNS = "jabber:client";
 	private static final Logger log = Logger.getLogger(Message.class.getName());
+
 	@Override
 	public void filter(Packet packet, XMPPResourceConnection session, NonAuthUserRepository repo,
 					   Queue<Packet> results) {

@@ -90,6 +90,7 @@ public class QueryModule
 		}
 
 		Packet result = packet.okResult(fin, 0);
+		result.setPacketFrom(null);
 		result.setPriority(Priority.LOW);
 
 		packetWriter.write(result);
